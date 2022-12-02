@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.backend.wrapper.controller.LegacyServiceWrapperController;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
@@ -21,6 +22,9 @@ import java.util.Map;
 
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ApplicationTests {
+
+	@Autowired
+	private LegacyServiceWrapperController legacyController;
 
 	@Autowired
 	private TestRestTemplate template;
@@ -78,7 +82,7 @@ class ApplicationTests {
 	@Test
 	void wrapperLogin() {
 
-		final String url = "/authenticate/login";
+		final String url = "/authenticate/login/";
 		final ResponseEntity<byte[]> responsePost =
 				template.postForEntity(
 						url,
@@ -87,7 +91,7 @@ class ApplicationTests {
 
 		ResponseEntity<byte[]> responsePostWrapper =
 				remoteTemplate.postForEntity(
-						LegacyServiceWrapperController.REDIRECT_URL + url,
+						legacyController.redirectUrl + url,
 						new HttpEntity<>(new HashMap<>()),
 						byte[].class);
 
@@ -108,7 +112,7 @@ class ApplicationTests {
 
 		ResponseEntity<byte[]> responsePostWrapper =
 				remoteTemplate.getForEntity(
-						LegacyServiceWrapperController.REDIRECT_URL + url,
+						legacyController.redirectUrl + url,
 						byte[].class);
 
 		Assertions.assertEquals(responsePost.getStatusCode(), responsePostWrapper.getStatusCode());

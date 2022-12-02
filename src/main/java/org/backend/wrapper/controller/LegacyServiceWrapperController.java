@@ -1,5 +1,6 @@
 package org.backend.wrapper.controller;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,8 @@ import java.util.Map;
 @RestController
 public class LegacyServiceWrapperController {
 
-    public final static String REDIRECT_URL = "https://google.com";
+    @Value("${url.redirect}")
+    public String redirectUrl;
 
     private final RestTemplate redirectRestTemplate;
 
@@ -51,7 +53,7 @@ public class LegacyServiceWrapperController {
             @RequestParam Map<String,String> params) throws RestClientException {
 
         final ResponseEntity<?> response = redirectRestTemplate.exchange(
-                REDIRECT_URL + request.getRequestURI(),
+                redirectUrl + request.getRequestURI(),
                 HttpMethod.valueOf(request.getMethod()),
                 new HttpEntity<>(headers),
                 byte[].class,
